@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國際策略管理 核心知識圖解全景</title>
+    <style>
+        /* 基礎重置與極簡變數 */
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --line: #cbd5e1;
+            --accent: #3b82f6;
+            --red-highlight: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --radius: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 2rem;
+            line-height: 1.5;
+            background-image: 
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: -1px -1px;
+            background-color: #f1f5f9; /* 淺灰網格背景 */
+        }
+
+        /* 主容器 */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* 標題與語音按鈕 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--line);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        h1 { font-size: 2rem; color: #0f172a; letter-spacing: 1px; }
+        .audio-btn {
+            background: var(--accent); color: white; border: none; padding: 0.75rem 1.5rem;
+            border-radius: 30px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            box-shadow: var(--shadow); transition: transform 0.2s;
+        }
+        .audio-btn:hover { transform: scale(1.05); }
+        .audio-btn.playing { background: #10b981; }
+
+        /* 核心定義區 (依指定格式) */
+        .strategy-def {
+            text-align: center; font-size: 1.75rem; font-weight: 700;
+            background: #f0fdf4; border: 2px solid #bbf7d0; padding: 1.5rem;
+            border-radius: var(--radius); margin-bottom: 2rem; color: var(--text-main);
+        }
+        .strategy-def span { color: var(--red-highlight); font-weight: 900; }
+
+        /* 雙欄佈局 */
+        .grid-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+        }
+        .section-title {
+            font-size: 1.25rem; font-weight: 700; color: var(--accent);
+            border-left: 4px solid var(--accent); padding-left: 0.75rem; margin-bottom: 1.5rem;
+        }
+        .card {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow);
+        }
+
+        /* 圖解元件：時間軸 */
+        .timeline {
+            display: flex; justify-content: space-between; align-items: center; position: relative; padding: 1rem 0;
+        }
+        .timeline::before {
+            content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--line); z-index: 1;
+        }
+        .time-node {
+            background: var(--surface); border: 2px solid var(--accent); border-radius: 20px;
+            padding: 0.5rem 1rem; position: relative; z-index: 2; font-weight: bold; font-size: 0.9rem; text-align: center;
+        }
+        .time-node.now { background: var(--accent); color: white; }
+        .time-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: normal; display: block; margin-top: 4px; }
+
+        /* 圖解元件：樹狀圖 (組織目的) */
+        .tree { display: flex; flex-direction: column; align-items: center; }
+        .tree-root { background: #1e293b; color: white; padding: 0.5rem 1.5rem; border-radius: 8px; font-weight: bold; margin-bottom: 1rem; position: relative;}
+        .tree-root::after { content: ''; position: absolute; bottom: -1rem; left: 50%; width: 2px; height: 1rem; background: var(--line); }
+        .tree-branches { display: flex; gap: 2rem; position: relative; border-top: 2px solid var(--line); padding-top: 1rem; }
+        .tree-branch { background: #f8fafc; border: 1px solid var(--line); padding: 1rem; border-radius: 8px; text-align: center; flex: 1; position: relative; }
+        .tree-branch::before { content: ''; position: absolute; top: -1rem; left: 50%; width: 2px; height: 1rem; background: var(--line); }
+        .flow-arrow { display: inline-block; margin: 0 4px; color: var(--text-muted); }
+
+        /* 圖解元件：循環圖 (PDCA / 動態能力) */
+        .cycle { display: flex; align-items: center; justify-content: center; gap: 1rem; font-weight: bold; }
+        .cycle-box { border: 2px dashed var(--accent); padding: 0.5rem 1rem; border-radius: 8px; color: var(--accent); }
+
+        /* 圖解元件：TIME 四創箭頭 */
+        .chevron-flow { display: flex; gap: 0.5rem; }
+        .chevron {
+            flex: 1; background: var(--text-main); color: white; text-align: center; padding: 0.75rem 0.5rem;
+            position: relative; font-weight: bold; font-size: 0.9rem; border-radius: 4px;
+        }
+        .chevron span { display: block; font-size: 0.7rem; font-weight: normal; opacity: 0.8; }
+
+        /* 圖解元件：2x2 矩陣 */
+        .matrix-container { display: grid; grid-template-columns: auto 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 4px; text-align: center; }
+        .m-title { font-weight: bold; font-size: 0.85rem; color: var(--text-muted); align-self: center; }
+        .m-cell { padding: 1.5rem 1rem; border-radius: 8px; font-weight: bold; display: flex; flex-direction: column; justify-content: center; border: 1px solid var(--line);}
+        .m-cell span { font-size: 0.8rem; font-weight: normal; margin-top: 4px; }
+        .bg-red { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+        .bg-green { background: #f0fdf4; border-color: #86efac; color: #166534; }
+        .bg-blue { background: #eff6ff; border-color: #93c5fd; color: #1e40af; }
+        .bg-gray { background: #f8fafc; color: var(--text-main); }
+
+        /* 圖解元件：VISA 方塊 */
+        .visa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+        .visa-box { background: #0f172a; color: white; text-align: center; padding: 1rem 0.5rem; border-radius: 8px; }
+        .visa-box strong { font-size: 1.5rem; display: block; color: #38bdf8; }
+        .visa-box span { font-size: 0.75rem; }
+
+        /* 頁腳 */
+        footer {
+            margin-top: 3rem; text-align: right; font-weight: bold; color: var(--text-muted);
+            border-top: 2px solid var(--line); padding-top: 1rem; letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <header>
+            <h1>國際策略管理 (SMMC) 圖解總覽</h1>
+            <button class="audio-btn" id="playAudioBtn" onclick="toggleAudio()">
+                <span id="audioIcon">▶️</span> <span id="audioText">播放語音導覽</span>
+            </button>
+        </header>
+
+        <!-- 嚴格要求的策略定義 -->
+        <div class="strategy-def">
+            策略=一個<span>組織</span>採取所有<span>行動</span>的最高<span>指導原則</span>。
+        </div>
+
+        <div class="grid-container">
+            <!-- 左欄：W13 -->
+            <div class="column">
+                <h2 class="section-title">壹、策略基礎與組織架構 (W13)</h2>
+                
+                <div class="card">
+                    <p style="text-align:center; font-weight:bold; margin-bottom:1rem;">動態契合 (Fit) = 天時 (PESTEL) + 地利 (市場競爭) + 人和 (組織管理)</p>
+                    <div class="timeline">
+                        <div class="time-node">過去 (Past)<span class="time-sub">技術➔產品➔商業➔產業</span></div>
+                        <div class="time-node now">現在 (Now)<span class="time-sub">Σ Actions (當前行動)</span></div>
+                        <div class="time-node">未來 (Future)<span class="time-sub">架構與願景落地</span></div>
+                    </div>
+                </div>
+
+                <div class="card tree">
+                    <div class="tree-root">營利組織目的 (For-Profit)</div>
+                    <div class="tree-branches">
+                        <div class="tree-branch">
+                            <strong>① 有形架構</strong><br>
+                            <span style="font-size:0.8rem; color:var(--text-muted);">層級 / 扁平<br>上下管控 ↔ 跨部協調</span>
+                        </div>
+                        <div class="tree-branch">
+                            <strong>② 無形導引</strong><br>
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Vision ➔ Mission ➔<br>Values ➔ Goals</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="text-align:center; margin-bottom: 1rem;">
+                        <strong>績效 = f (資源, 能力, 文化)</strong><br>
+                        <span style="font-size:0.8rem; color:var(--text-muted);">*人才(Talent)屬價值系統 ≠ 勞力(Labor)為計時成本</span>
+                    </div>
+                    <div class="cycle" style="margin-bottom: 1rem;">
+                        <span style="color:var(--text-muted); font-size:0.8rem;">動態能力<br>(D/C)</span>
+                        <div class="cycle-box">感知 (Sensing)</div>
+                        <span>⇄</span>
+                        <div class="cycle-box">重組 (Transforming)</div>
+                    </div>
+                    <div class="cycle">
+                        <span style="color:var(--text-muted); font-size:0.8rem;">管理<br>循環</span>
+                        <div style="font-size:0.85rem; background:#f1f5f9; padding:0.5rem; border-radius:8px;">POLC<br>規劃➔組織➔領導➔管控</div>
+                        <span>+</span>
+                        <div style="font-size:0.85rem; background:#f1f5f9; padding:0.5rem; border-radius:8px;">PDCA<br>Plan➔Do➔Control➔Act</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右欄：TIME -->
+            <div class="column">
+                <h2 class="section-title">貳、技術創新、市場與品牌 (TIME)</h2>
+
+                <div class="card">
+                    <div class="chevron-flow">
+                        <div class="chevron">Idea 創意<span>(情境發現 / Discovery)</span></div>
+                        <div class="chevron">Creation 創作<span>(Recombination)</span></div>
+                        <div class="chevron" style="background:var(--accent);">Innovation 創新<span>(商業化價值)</span></div>
+                        <div class="chevron">Entrepreneurship<span>(組織創立)</span></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="matrix-container">
+                        <div></div>
+                        <div class="m-title">組件未變 (No)</div>
+                        <div class="m-title">組件改變 (Yes)</div>
+                        
+                        <div class="m-title" style="writing-mode: vertical-rl; transform: rotate(180deg);">架構改變 (Yes)</div>
+                        <div class="m-cell bg-green">架構創新 <span>(單輪車)</span></div>
+                        <div class="m-cell bg-red">根本創新 <span>(滑板車)</span></div>
+                        
+                        <div class="m-title" style="writing-mode: vertical-rl; transform: rotate(180deg);">架構改變 (No)</div>
+                        <div class="m-cell bg-gray">漸進創新 <span>(自行車)</span></div>
+                        <div class="m-cell bg-blue">模組創新 <span>(電動自行車)</span></div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; gap: 1rem;">
+                    <div style="flex:1; border-right:1px solid var(--line); padding-right:1rem;">
+                        <strong>使用者視角</strong>
+                        <ul style="font-size:0.8rem; margin-top:0.5rem; padding-left:1rem; color:var(--text-muted);">
+                            <li><strong>看得見：</strong>產品創新</li>
+                            <li><strong>看不見：</strong>程序/資材/組織/商模</li>
+                        </ul>
+                    </div>
+                    <div style="flex:1;">
+                        <strong>對廠商衝擊</strong>
+                        <ul style="font-size:0.8rem; margin-top:0.5rem; padding-left:1rem; color:var(--text-muted);">
+                            <li style="color:#16a34a;">增強 + 互補者</li>
+                            <li style="color:#dc2626;">摧毀 + 顛覆者 (例: Tesla FSD)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="text-align:center; margin-bottom:1rem; font-size:0.9rem;">
+                        <strong>市場結構 (Σ Sellers × Buyers)：</strong>
+                        1家=獨佔 ｜ 2家=偶佔(雙頭壟斷) ｜ 3~5家=寡佔
+                    </div>
+                    <div class="visa-grid">
+                        <div class="visa-box"><strong>V</strong><span>Value System<br>(價值系統)</span></div>
+                        <div class="visa-box"><strong>I</strong><span>Identification<br>(識別認同)</span></div>
+                        <div class="visa-box"><strong>S</strong><span>Signaling<br>(訊號釋放)</span></div>
+                        <div class="visa-box"><strong>A</strong><span>Affiliation<br>(情感依附)</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer>
+            2026/5/18 112212004 吳宥璇
+        </footer>
+    </div>
+
+    <script>
+        // Audio Overview (語音導覽腳本與播放控制)
+        let isPlaying = false;
+        const synth = window.speechSynthesis;
+        let utterance = null;
+
+        const overviewText = `
+            歡迎收聽國際策略管理期末圖解總覽，我是您的語音導覽員。
+            本圖表分為左右兩大區塊。
+            首先，請看正上方最核心的定義：策略，就是一個組織，採取所有行動的，最高指導原則。
+            左方區塊探討策略基礎與組織架構。策略追求的是天時、地利、人和的動態契合。
+            在時間軸上，我們將過去的技術演進，轉化為現在的行動總和，以期達到未來的願景落地。
+            組織為達成目的，分為有形的層級架構，與無形的願景導引。並依靠感知與重組的「動態能力」，結合 PDCA 循環持續精進。
+            
+            右方區塊進入創新與市場。
+            最上方的箭頭是 TIME 四創路徑：從情境發現的創意，走向創作、創新，最終達到創業。
+            中段的矩陣，是以組件與架構來劃分的四種創新類型：包含漸進式的自行車、模組化的電動車、架構創新的單輪車，以及根本創新的滑板車。這些創新對既有廠商可能帶來互補增強，也可能是無情的顛覆摧毀。
+            最後，在決定了獨佔或寡佔的市場結構中，企業必須建立 VISA 品牌資產，包含價值、認同、訊號與情感依附。
+            以上是本次總覽，祝您期末順利。
+        `;
+
+        function toggleAudio() {
+            const btn = document.getElementById('playAudioBtn');
+            const icon = document.getElementById('audioIcon');
+            const text = document.getElementById('audioText');
+
+            if (isPlaying) {
+                synth.cancel(); // 停止播放
+                isPlaying = false;
+                btn.classList.remove('playing');
+                icon.innerText = '▶️';
+                text.innerText = '播放語音導覽';
+            } else {
+                // 開始播放
+                utterance = new SpeechSynthesisUtterance(overviewText);
+                utterance.lang = 'zh-TW';
+                utterance.rate = 1.0;
+                
+                utterance.onend = () => {
+                    isPlaying = false;
+                    btn.classList.remove('playing');
+                    icon.innerText = '▶️';
+                    text.innerText = '播放語音導覽';
+                };
+
+                synth.speak(utterance);
+                isPlaying = true;
+                btn.classList.add('playing');
+                icon.innerText = '⏸️';
+                text.innerText = '停止導覽';
+            }
+        }
+
+        // 確保離開頁面時停止語音
+        window.onbeforeunload = function() {
+            synth.cancel();
+        };
+    </script>
+</body>
+</html>
